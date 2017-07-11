@@ -28,9 +28,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </test-fixture>
 
     <script>
-    /* global suite, test, fixture, assert */
+    /* global sinon, fixture, assert */
     suite('basic', function() {
       var element;
+      var contentType = 'text/plain';
       setup(function() {
         element = fixture('basic');
       });
@@ -40,16 +41,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('Is validated with a value', function() {
-        element.value = new Blob([''], {type: 'text/plain'});
+        element.value = new Blob([''], {type: contentType});
         assert.isTrue(element.validate());
       });
 
       test('Fires payload-value-changed custom event', function() {
         var spy = sinon.stub();
         element.addEventListener('payload-value-changed', spy);
-        var blob = new Blob([''], {type: 'text/plain'});
+        var blob = new Blob([''], {type: contentType});
         element.value = blob;
         assert.isTrue(spy.calledOnce);
+      });
+
+      test('Fires content-type-changed custom event with known type', function(done) {
+        element.addEventListener('content-type-changed', function(e) {
+          assert.equal(e.detail.value, contentType);
+          done();
+        });
+        var blob = new Blob([''], {type: contentType});
+        element.value = blob;
+      });
+
+      test('Fires content-type-changed custom event with unknown type', function(done) {
+        element.addEventListener('content-type-changed', function(e) {
+          assert.equal(e.detail.value, 'application/octet-stream');
+          done();
+        });
+        var blob = new Blob(['']);
+        element.value = blob;
       });
     });
     </script>

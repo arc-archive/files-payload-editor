@@ -153,6 +153,18 @@ Custom property | Description | Default
       this.fire('payload-value-changed', {
         value: value
       });
+      if (!value) {
+        return;
+      }
+      var type;
+      if (value.type) {
+        type = value.type;
+      } else {
+        type = 'application/octet-stream';
+      }
+      this.fire('content-type-changed', {
+        value: type
+      });
     },
     /**
      * A handler to choose file button click.
