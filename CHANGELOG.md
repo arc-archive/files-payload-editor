@@ -1,3 +1,13 @@
+<a name="0.1.2"></a>
+## [0.1.2](https://github.com/advanced-rest-client/files-payload-editor/compare/0.1.1...v0.1.2) (2017-07-11)
+
+
+### Update
+
+* Added `ArcBehaviors.RequestPayloadEditorBehavior` to controll behavior when the element is opened or not. ([9cd806a11b281553d75cd0792ab91241f789ed73](https://github.com/advanced-rest-client/files-payload-editor/commit/9cd806a11b281553d75cd0792ab91241f789ed73))
+
+
+
 <a name="0.1.1"></a>
 ## 0.1.1 (2017-07-11)
 

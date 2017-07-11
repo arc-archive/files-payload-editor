@@ -23,7 +23,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <test-fixture id="basic">
       <template>
-        <files-payload-editor></files-payload-editor>
+        <files-payload-editor attr-for-opened="opened"></files-payload-editor>
       </template>
     </test-fixture>
 
@@ -36,6 +36,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         element = fixture('basic');
       });
 
+      test('_isOpened equals false', function() {
+        assert.isFalse(element._isOpened);
+      });
+
       test('Is not validated without a value', function() {
         assert.isFalse(element.validate());
       });
@@ -45,35 +49,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.isTrue(element.validate());
       });
 
-      test('Computes hasFile', function() {
+      test('Computes hasFile when not opened', function() {
         element.value = new Blob([''], {type: contentType});
         assert.isTrue(element.hasFile);
       });
 
-      test('Fires payload-value-changed custom event', function() {
+      test('Computes hasFile when not opened', function() {
+        element.value = new Blob([''], {type: contentType});
+        element.setAttribute('opened', true);
+        assert.isTrue(element.hasFile);
+      });
+
+      test('Do not fires payload-value-changed custom event when not opened', function() {
         var spy = sinon.stub();
         element.addEventListener('payload-value-changed', spy);
         var blob = new Blob([''], {type: contentType});
         element.value = blob;
-        assert.isTrue(spy.calledOnce);
+        assert.isFalse(spy.called);
       });
 
-      test('Fires content-type-changed custom event with known type', function(done) {
-        element.addEventListener('content-type-changed', function(e) {
-          assert.equal(e.detail.value, contentType);
-          done();
-        });
+      test('Do not fires content-type-changed custom event when not opened', function() {
+        var spy = sinon.stub();
+        element.addEventListener('content-type-changed', spy);
         var blob = new Blob([''], {type: contentType});
         element.value = blob;
-      });
-
-      test('Fires content-type-changed custom event with unknown type', function(done) {
-        element.addEventListener('content-type-changed', function(e) {
-          assert.equal(e.detail.value, 'application/octet-stream');
-          done();
-        });
-        var blob = new Blob(['']);
-        element.value = blob;
+        assert.isFalse(spy.called);
       });
     });
     </script>
