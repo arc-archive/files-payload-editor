@@ -32,6 +32,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     suite('basic', function() {
       var element;
       var contentType = 'text/plain';
+      var testBlob = new Blob(['test'], {type: contentType});
       setup(function() {
         element = fixture('basic');
       });
@@ -41,13 +42,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('Is validated with a value', function() {
-        element.value = new Blob([''], {type: contentType});
+        element.value = testBlob;
         assert.isTrue(element.validate());
       });
 
       test('Computes hasFile', function() {
-        element.value = new Blob([''], {type: contentType});
+        element.value = testBlob;
         assert.isTrue(element.hasFile);
+      });
+
+      test('Computes fileName', function() {
+        element.value = testBlob;
+        assert.equal(element.fileName, 'blob');
+      });
+
+      test('Computes fileSize', function() {
+        element.value = testBlob;
+        assert.equal(element.fileSize, 4);
       });
 
       test('Fires payload-value-changed custom event', function() {
