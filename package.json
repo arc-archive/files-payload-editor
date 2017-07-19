@@ -16,7 +16,7 @@
   "author": "The Advanced REST client authors <arc@mulesoft.com>",
   "scripts": {
     "serve": "node_modules/.bin/polymer serve",
-    "lint": "node_modules/.bin/polymer lint files-payload-editor.html --rules polymer-1",
+    "lint": "node_modules/.bin/polymer lint files-payload-editor.html",
     "test-sauce": "node_modules/.bin/polymer test --plugin sauce --job-name \"files-payload-editor:local-test\"",
     "test": "node_modules/.bin/polymer test --plugin local",
     "deps": "npm install --quiet && bower install --quiet",
