@@ -1,3 +1,17 @@
+<a name="0.1.3"></a>
+## [0.1.3](https://github.com/advanced-rest-client/files-payload-editor/compare/0.1.2...0.1.3) (2017-07-19)
+
+
+### New
+
+* Added option to support bas64 value creation ([9ae0b072ad1df67808515ede92e41bce5aba5dcd](https://github.com/advanced-rest-client/files-payload-editor/commit/9ae0b072ad1df67808515ede92e41bce5aba5dcd))
+
+### Update
+
+* Updated test configuration. ([4a26814a4cf595ec4191ae35690391c64c7d1830](https://github.com/advanced-rest-client/files-payload-editor/commit/4a26814a4cf595ec4191ae35690391c64c7d1830))
+
+
+
 <a name="0.1.2"></a>
 ## [0.1.2](https://github.com/advanced-rest-client/files-payload-editor/compare/0.1.1...v0.1.2) (2017-07-11)
 
