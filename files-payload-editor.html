@@ -113,14 +113,14 @@ Custom property | Description | Default
     <div class="selector">
       <paper-button raised on-tap="_selectFile" class="file-trigger">Choose a file</paper-button>
       <template is="dom-if" if="[[hasFile]]">
-        <span class="files-counter-message" hidden$="[[!hasFile]]">1 file selected, [[value.size]] bytes</span>
+        <span class="files-counter-message" hidden$="[[!hasFile]]">1 file selected, [[fileSize]] bytes</span>
       </template>
     </div>
     <template is="dom-if" if="[[hasFile]]">
       <div class="list">
         <paper-material elevation="1">
           <iron-icon class="file-icon" icon="arc:insert-drive-file"></iron-icon>
-          <span class="file-name">[[value.name]]</span>
+          <span class="file-name">[[fileName]]</span>
           <paper-icon-button class="delete-icon" icon="arc:close" hidden$="[[!hasFile]]" title="Clear file" on-tap="removeFile"></paper-icon-button>
         </paper-material>
       </div>
@@ -147,13 +147,22 @@ Custom property | Description | Default
       // Computed value, true if the control has files.
       hasFile: {
         type: Boolean,
-        computed: '_computeHasFile(value, _isOpened)'
-      }
+        readOnly: true
+      },
+      /**
+       * If set the value will be base64 encoded.
+       */
+      base64Encode: Boolean,
+      // Selected file name
+      fileName: String,
+      // Selected file size,
+      fileSize: Number
     },
 
     observers: ['_valueChnaged(value, _isOpened)'],
 
     _valueChnaged: function(value, _isOpened) {
+      this._setHasFile(!!value);
       if (!_isOpened) {
         return;
       }
@@ -161,6 +170,14 @@ Custom property | Description | Default
         value: value
       });
       if (!value) {
+        return;
+      }
+      if (value instanceof Blob) {
+        this.set('fileName', value.name || 'blob');
+        this.set('fileSize', value.size);
+      }
+      if (!this.fileName || (!this.fileSize && this.fileSize !== 0)) {
+        this._updateFileMeta(value);
         return;
       }
       var type;
@@ -172,6 +189,35 @@ Custom property | Description | Default
       this.fire('content-type-changed', {
         value: type
       });
+    },
+    /**
+     * Updated `fileName` and `fileSize` from a base64 encoded string value
+     *
+     * @param {String} value File as base64 string
+     */
+    _updateFileMeta: function(value) {
+      if (!value || value instanceof Blob) {
+        return;
+      }
+      var type;
+      if (value.indexOf('data:') === 0) {
+        value = value.substr(5);
+        var comaIndex = value.indexOf(',');
+        type = value.substr(0, value.indexOf(';'));
+        value = value.substr(comaIndex + 1);
+      }
+      var byteChars;
+      try {
+        byteChars = atob(value);
+      } catch (e) {
+        console.info('Unable to decode base64 string');
+      }
+      type = type || 'application/octet-stream';
+      this.fire('content-type-changed', {
+        value: type
+      });
+      this.set('fileName', 'blob');
+      this.set('fileSize', byteChars ? byteChars.length : -1);
     },
     /**
      * A handler to choose file button click.
@@ -188,21 +234,64 @@ Custom property | Description | Default
      * This will update files array for corresponding `this.value` array object.
      */
     _fileObjectChanged: function(e) {
-      this.set('value', e.target.files[0]);
+      this._setFileValue(e.target.files[0]);
       this.$$('.file-trigger').blur();
     },
-
+    /**
+     * Sets the `value` depending on `base64Encode` option.
+     *
+     * @param {Blob} file A file to set as a value.
+     */
+    _setFileValue: function(file) {
+      if (!file) {
+        this.set('value', undefined);
+        return;
+      }
+      if (!this.base64Encode) {
+        this.set('value', file);
+        return;
+      }
+      var reader = new FileReader();
+      var context = this;
+      reader.addEventListener('load', function() {
+        var typed = new Uint8Array(this.result);
+        var result = btoa(String.fromCharCode.apply(null, typed));
+        context.set('value', result);
+        context.__informBase64Conversion();
+      });
+      reader.addEventListener('error', function() {
+        context.set('value', 'Invalid file');
+        context.__informBase64Conversion();
+      });
+      reader.readAsArrayBuffer(file);
+    },
+    // Send an event when base64 conversion ends
+    __informBase64Conversion: function() {
+      this.fire('base64-value-set', {}, {
+        bubbles: false
+      });
+    },
+    // Overides Polymer.IronValidatableBehavior
     _getValidity: function() {
-      var v = this.value;
-      return v && v instanceof Blob;
+      return this._computeHasFile(this.value);
     },
 
     _computeHasFile: function(file) {
-      return !!(file && file instanceof Blob);
+      if (!file) {
+        return false;
+      }
+      var enc = this.base64Encode;
+      if (enc) {
+        return !!file;
+      }
+      return file instanceof Blob;
     },
 
     removeFile: function() {
       this.value = undefined;
+      this.fileName = undefined;
+      this.fileSize = undefined;
+      this._setHasFile(false);
       var file = this.$$('input[type="file"]');
       file.value = '';
     }
