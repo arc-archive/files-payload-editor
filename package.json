@@ -1,15 +1,14 @@
 {
-  "name": "@api-components/files-payload-editor",
+  "name": "@advanced-rest-client/files-payload-editor",
   "description": "A request body editor to add files as a payload.",
-  "version": "2.0.0-preview",
-  "license": "Apache-2.0 OR",
+  "version": "2.0.0",
+  "license": "Apache-2.0",
   "authors": [
     "Pawel Psztyc",
     "The Advanced REST client authors <arc@mulesoft.com>"
   ],
   "devDependencies": {
-    "@polymer/gen-typescript-declarations": "^1.1.1",
-    "bower": "^1.8.0"
+    "@polymer/gen-typescript-declarations": "^1.1.1"
   },
   "private": false,
   "main": "files-payload-editor.html",
