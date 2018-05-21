@@ -1,18 +1,8 @@
 <!doctype html>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
 <html>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
     <script src="../../web-component-tester/browser.js"></script>
     <script src="../../iron-test-helpers/test-helpers.js"></script>
@@ -33,8 +23,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var element;
       var contentType = 'text/plain';
       var testBlob = new Blob(['test'], {type: contentType});
-      setup(function() {
+      setup(function(done) {
         element = fixture('basic');
+        flush(() => done());
       });
 
       test('Is not validated without a value', function() {
@@ -61,16 +52,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.equal(element.fileSize, 4);
       });
 
-      test('Fires payload-value-changed custom event', function() {
-        var spy = sinon.stub();
-        element.addEventListener('payload-value-changed', spy);
-        var blob = new Blob([''], {type: contentType});
-        element.value = blob;
-        assert.isTrue(spy.calledOnce);
-      });
-
       test('Fires content-type-changed custom event with known type', function(done) {
-        element.addEventListener('content-type-changed', function(e) {
+        element.addEventListener('content-type-changed', function clb(e) {
+          element.removeEventListener('content-type-changed', clb);
           assert.equal(e.detail.value, contentType);
           done();
         });
@@ -80,6 +64,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('Fires content-type-changed custom event with unknown type', function(done) {
         element.addEventListener('content-type-changed', function(e) {
+
           assert.equal(e.detail.value, 'application/octet-stream');
           done();
         });
