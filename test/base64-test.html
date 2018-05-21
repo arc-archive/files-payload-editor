@@ -42,7 +42,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('Produces base64 string', function(done) {
         element._setFileValue(testBlob);
-        element.addEventListener('base64-value-set', function() {
+        element.addEventListener('base64-value-set', function clb() {
+          element.removeEventListener('base64-value-set', clb);
           assert.equal(element.value, testBase64String);
           done();
         });
@@ -50,7 +51,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('Computes fileName', function(done) {
         element._setFileValue(testBlob);
-        element.addEventListener('base64-value-set', function() {
+        element.addEventListener('base64-value-set', function clb() {
+          element.removeEventListener('base64-value-set', clb);
           assert.equal(element.fileName, 'blob');
           done();
         });
@@ -58,7 +60,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('Computes fileSize', function(done) {
         element._setFileValue(testBlob);
-        element.addEventListener('base64-value-set', function() {
+        element.addEventListener('base64-value-set', function clb() {
+          element.removeEventListener('base64-value-set', clb);
           assert.equal(element.fileSize, 4);
           done();
         });
