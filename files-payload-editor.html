@@ -98,6 +98,7 @@ the License.
     <input type="file" hidden on-change="_fileObjectChanged" />
   </template>
   <script>
+  let latestFile;
   /**
    * `<files-payload-editor>` A request body editor to add files as a payload.
    *
@@ -136,7 +137,9 @@ the License.
    * @memberof ApiComponents
    */
   class FilesPayloadEditor extends Polymer.mixinBehaviors([Polymer.IronValidatableBehavior], Polymer.Element) {
-    static get is() { return 'files-payload-editor'; }
+    static get is() {
+      return 'files-payload-editor';
+    }
     static get properties() {
       return {
         // Computed value, true if the control has files.
@@ -174,13 +177,16 @@ the License.
     }
 
     _valueChnaged(value) {
-      this._setHasFile(!!value);
       if (!value) {
         return;
       }
       if (value instanceof Blob) {
         this.set('fileName', value.name || 'blob');
         this.set('fileSize', value.size);
+        this._setHasFile(true);
+        latestFile = value;
+      } else {
+        this._setHasFile(false);
       }
       if (!this.fileName || (!this.fileSize && this.fileSize !== 0)) {
         this._updateFileMeta(value);
@@ -192,7 +198,9 @@ the License.
       } else {
         type = 'application/octet-stream';
       }
-      this._informContentType(type);
+      setTimeout(() => {
+        this._informContentType(type);
+      });
     }
     /**
      * Updated `fileName` and `fileSize` from a base64 encoded string value
@@ -200,7 +208,12 @@ the License.
      * @param {String} value File as base64 string
      */
     _updateFileMeta(value) {
-      if (!value || value instanceof Blob) {
+      if (!value || typeof value !== 'string') {
+        if (latestFile) {
+          this.value = latestFile;
+          return;
+        }
+        this._setHasFile(false);
         return;
       }
       let type;
@@ -213,8 +226,13 @@ the License.
       let byteChars;
       try {
         byteChars = atob(value);
+        this._setHasFile(true);
       } catch (e) {
-        console.info('Unable to decode base64 string');
+        if (latestFile) {
+          this.value = latestFile;
+          return;
+        }
+        this._setHasFile(false);
       }
       type = type || 'application/octet-stream';
       this._informContentType(type);
@@ -251,6 +269,8 @@ the License.
     /**
      * A handler to file change event for input[type="file"].
      * This will update files array for corresponding `this.value` array object.
+     *
+     * @param {Event} e Input change event
      */
     _fileObjectChanged(e) {
       this._setFileValue(e.target.files[0]);
@@ -273,13 +293,13 @@ the License.
       const reader = new FileReader();
       const context = this;
       reader.addEventListener('load', function() {
-        const typed = new Uint8Array(this.result);
+        const typed = new Uint8Array(reader.result);
         const result = btoa(String.fromCharCode.apply(null, typed));
         context.set('value', result);
         context.__informBase64Conversion();
       });
       reader.addEventListener('error', function() {
-        console.error('Processing error');
+        console.warn('File value processing error');
         context.set('value', 'Invalid file');
         context.__informBase64Conversion();
       });
@@ -287,9 +307,6 @@ the License.
     }
     // Send an event when base64 conversion ends
     __informBase64Conversion() {
-      this.fire('base64-value-set', {}, {
-        bubbles: false
-      });
       const e = new CustomEvent('base64-value-set', {
         bubbles: false,
         cancelable: true
@@ -321,6 +338,13 @@ the License.
       this._setHasFile(false);
       const file = this._getInput();
       file.value = '';
+    }
+    /**
+     * The element keeps in memory last selected file so it can be restored.
+     * This removes reference to the object so it can be GSd.
+     */
+    clearCache() {
+      latestFile = undefined;
     }
   }
   window.customElements.define(FilesPayloadEditor.is, FilesPayloadEditor);
