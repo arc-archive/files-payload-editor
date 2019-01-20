@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
     <script src="../../web-component-tester/browser.js"></script>
     <script src="../../iron-test-helpers/test-helpers.js"></script>
     <script src="../../iron-test-helpers/mock-interactions.js"></script>
@@ -18,13 +18,13 @@
     </test-fixture>
 
     <script>
-    /* global sinon, fixture, assert */
     suite('basic', function() {
-      var element;
-      var contentType = 'text/plain';
-      var testBlob = new Blob(['test'], {type: contentType});
+      let element;
+      const contentType = 'text/plain';
+      const testBlob = new Blob(['test'], {type: contentType});
       setup(function(done) {
         element = fixture('basic');
+        element.clearCache();
         flush(() => done());
       });
 
@@ -58,18 +58,203 @@
           assert.equal(e.detail.value, contentType);
           done();
         });
-        var blob = new Blob([''], {type: contentType});
+        const blob = new Blob([''], {type: contentType});
         element.value = blob;
       });
 
       test('Fires content-type-changed custom event with unknown type', function(done) {
         element.addEventListener('content-type-changed', function(e) {
-
           assert.equal(e.detail.value, 'application/octet-stream');
           done();
         });
-        var blob = new Blob(['']);
+        const blob = new Blob(['']);
         element.value = blob;
+      });
+    });
+
+    suite('_getInput()', () => {
+      let element;
+      setup(function(done) {
+        element = fixture('basic');
+        flush(() => done());
+      });
+
+      test('Returns the input', () => {
+        const input = element._getInput();
+        assert.ok(input);
+        assert.equal(input.type, 'file');
+      });
+    });
+
+    suite('_valueChnaged()', () => {
+      const contentType = 'text/plain';
+      let element;
+      let blob;
+      setup(function(done) {
+        element = fixture('basic');
+        element.clearCache();
+        blob = new Blob(['test'], {type: contentType});
+        blob.name = 'test-name';
+        flush(() => done());
+      });
+
+      test('Does nothing when no value', () => {
+        element._valueChnaged();
+        assert.isUndefined(element.fileName);
+      });
+
+      test('Sets file name from file', () => {
+        element._valueChnaged(blob);
+        assert.equal(element.fileName, 'test-name');
+      });
+
+      test('Sets file fileSize from file', () => {
+        element._valueChnaged(blob);
+        assert.isAbove(element.fileSize, 0);
+      });
+
+      test('Sets hasFile', () => {
+        element._valueChnaged(blob);
+        assert.isTrue(element.hasFile);
+      });
+
+      test('Calls _informContentType()', (done) => {
+        const spy = sinon.spy(element, '_informContentType');
+        element._valueChnaged(blob);
+        setTimeout(() => {
+          assert.isTrue(spy.called);
+          assert.equal(spy.args[0][0], contentType);
+          done();
+        });
+      });
+
+      test('Calls _informContentType() with default content type', (done) => {
+        const spy = sinon.spy(element, '_informContentType');
+        blob = new Blob(['test']);
+        element._valueChnaged(blob);
+        setTimeout(() => {
+          assert.equal(spy.args[0][0], 'application/octet-stream');
+          done();
+        });
+      });
+
+      test('Calls _updateFileMeta() for other types', () => {
+        const spy = sinon.spy(element, '_updateFileMeta');
+        element._valueChnaged({});
+        assert.isTrue(spy.called);
+      });
+    });
+
+    suite('_updateFileMeta()', () => {
+      let element;
+      setup(function(done) {
+        element = fixture('basic');
+        element.clearCache();
+        flush(() => done());
+      });
+
+      test('Sets hasFile to false when no value', () => {
+        element._updateFileMeta();
+        assert.isFalse(element.hasFile);
+      });
+
+      test('Sets hasFile to false when value value is not string', () => {
+        element._updateFileMeta({});
+        assert.isFalse(element.hasFile);
+      });
+
+      test('Restores previously selected file', () => {
+        const blob = new Blob(['test']);
+        element._valueChnaged(blob);
+        element.value = undefined;
+        element._updateFileMeta({});
+        assert.typeOf(element.value, 'blob');
+      });
+
+      test('Sets has file to true when restoring a file', () => {
+        const blob = new Blob(['test']);
+        element._valueChnaged(blob);
+        element.value = undefined;
+        element._updateFileMeta({});
+        assert.isTrue(element.hasFile);
+      });
+
+      test('Restores previously selected file when value is invalid', () => {
+        const blob = new Blob(['test']);
+        element._valueChnaged(blob);
+        element.value = undefined;
+        element._updateFileMeta('a==');
+        assert.typeOf(element.value, 'blob');
+      });
+
+      // rest of the tests in base64-test.html
+    });
+
+    suite('_fileObjectChanged()', () => {
+      let element;
+      setup(function(done) {
+        element = fixture('basic');
+        element.clearCache();
+        flush(() => done());
+      });
+
+      test('Calls _setFileValue( with file value)', () => {
+        const spy = sinon.spy(element, '_setFileValue');
+        const blob = new Blob(['test']);
+        element._fileObjectChanged({
+          target: {
+            files: [blob]
+          }
+        });
+        assert.isTrue(spy.called);
+        assert.isTrue(spy.args[0][0] === blob);
+      });
+    });
+
+    suite('_setFileValue()', () => {
+      const contentType = 'text/plain';
+      let element;
+      let blob;
+      setup(function(done) {
+        element = fixture('basic');
+        element.clearCache();
+        blob = new Blob(['test'], {type: contentType});
+        blob.name = 'test-name';
+        flush(() => done());
+      });
+
+      test('Sets value undefined when no argument', () => {
+        element.value = blob;
+        element._setFileValue();
+        assert.isUndefined(element.value);
+      });
+
+      test('Sets file value', () => {
+        element._setFileValue(blob);
+        assert.isTrue(element.value === blob);
+      });
+
+      test('Sets text value when base64Encode', (done) => {
+        element.base64Encode = true;
+        element._setFileValue(blob);
+        element.addEventListener('value-changed', function f() {
+          element.removeEventListener('value-changed', f);
+          assert.typeOf(element.value, 'string');
+          done();
+        });
+      });
+
+      test('Calls __informBase64Conversion()', (done) => {
+        element.base64Encode = true;
+        const spy = sinon.spy(element, '__informBase64Conversion');
+        element._setFileValue(blob);
+        element.addEventListener('value-changed', function f() {
+          element.removeEventListener('value-changed', f);
+          setTimeout(() => {
+            assert.isTrue(spy.called);
+            done();
+          });
+        });
       });
     });
     </script>
