@@ -4,11 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
 
-    <script src="../../../@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
-    <script src="../../../wct-browser-legacy/browser.js"></script>
-    <script src="../../../@polymer/iron-test-helpers/test-helpers.js" type="module"></script>
-    <script src="../../../@polymer/iron-test-helpers/mock-interactions.js" type="module"></script>
-    <script type="module" src="../files-payload-editor.js"></script>
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../node_modules/@polymer/test-fixture/test-fixture.js"></script>
+    <script src="../node_modules/mocha/mocha.js"></script>
+    <script src="../node_modules/chai/chai.js"></script>
+    <script src="../node_modules/wct-mocha/wct-mocha.js"></script>
+
   </head>
   <body>
 
@@ -19,74 +20,74 @@
     </test-fixture>
 
     <script type="module">
-import '../files-payload-editor.js';
-suite('basic', function() {
-  let element;
-  const contentType = 'text/plain';
-  const testBase64String = 'dGVzdA==';
-  const testBlob = new Blob(['test'], {type: contentType});
-  const contentTypeBase64 = 'data:' + contentType + ';base64,' + testBase64String;
-  setup(function() {
-    element = fixture('base64');
-    element.clearCache();
-  });
+    import '../files-payload-editor.js';
+    suite('basic', function() {
+      let element;
+      const contentType = 'text/plain';
+      const testBase64String = 'dGVzdA==';
+      const testBlob = new Blob(['test'], {type: contentType});
+      const contentTypeBase64 = 'data:' + contentType + ';base64,' + testBase64String;
+      setup(function() {
+        element = fixture('base64');
+        element.clearCache();
+      });
 
-  test('Produces base64 string', function(done) {
-    element._setFileValue(testBlob);
-    element.addEventListener('base64-value-set', function clb() {
-      element.removeEventListener('base64-value-set', clb);
-      assert.equal(element.value, testBase64String);
-      done();
+      test('Produces base64 string', function(done) {
+        element._setFileValue(testBlob);
+        element.addEventListener('base64-value-set', function clb() {
+          element.removeEventListener('base64-value-set', clb);
+          assert.equal(element.value, testBase64String);
+          done();
+        });
+      });
+
+      test('Computes fileName', function(done) {
+        element._setFileValue(testBlob);
+        element.addEventListener('base64-value-set', function clb() {
+          element.removeEventListener('base64-value-set', clb);
+          assert.equal(element.fileName, 'blob');
+          done();
+        });
+      });
+
+      test('Computes fileSize', function(done) {
+        element._setFileValue(testBlob);
+        element.addEventListener('base64-value-set', function clb() {
+          element.removeEventListener('base64-value-set', clb);
+          assert.equal(element.fileSize, 4);
+          done();
+        });
+      });
+
+      test('Fires base64 content type', function(done) {
+        element.addEventListener('content-type-changed', function(e) {
+          assert.equal(e.detail.value, contentType);
+          done();
+        });
+        element.value = contentTypeBase64;
+      });
+
+      test('Computes hasFile from base64 with content type', function() {
+        element.value = contentTypeBase64;
+        assert.isTrue(element.hasFile);
+      });
+
+      test('Computes fileName from base64 with content type', function() {
+        element.value = contentTypeBase64;
+        assert.equal(element.fileName, 'blob');
+      });
+
+      test('Computes fileSize from base64 with content type', function() {
+        element.value = contentTypeBase64;
+        assert.equal(element.fileSize, 4);
+      });
+
+      test('Sets hasFile to false when invalid input', () => {
+        element._updateFileMeta('a==');
+        assert.isFalse(element.hasFile);
+      });
     });
-  });
-
-  test('Computes fileName', function(done) {
-    element._setFileValue(testBlob);
-    element.addEventListener('base64-value-set', function clb() {
-      element.removeEventListener('base64-value-set', clb);
-      assert.equal(element.fileName, 'blob');
-      done();
-    });
-  });
-
-  test('Computes fileSize', function(done) {
-    element._setFileValue(testBlob);
-    element.addEventListener('base64-value-set', function clb() {
-      element.removeEventListener('base64-value-set', clb);
-      assert.equal(element.fileSize, 4);
-      done();
-    });
-  });
-
-  test('Fires base64 content type', function(done) {
-    element.addEventListener('content-type-changed', function(e) {
-      assert.equal(e.detail.value, contentType);
-      done();
-    });
-    element.value = contentTypeBase64;
-  });
-
-  test('Computes hasFile from base64 with content type', function() {
-    element.value = contentTypeBase64;
-    assert.isTrue(element.hasFile);
-  });
-
-  test('Computes fileName from base64 with content type', function() {
-    element.value = contentTypeBase64;
-    assert.equal(element.fileName, 'blob');
-  });
-
-  test('Computes fileSize from base64 with content type', function() {
-    element.value = contentTypeBase64;
-    assert.equal(element.fileSize, 4);
-  });
-
-  test('Sets hasFile to false when invalid input', () => {
-    element._updateFileMeta('a==');
-    assert.isFalse(element.hasFile);
-  });
-});
-</script>
+    </script>
 
   </body>
 </html>

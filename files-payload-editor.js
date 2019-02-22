@@ -11,18 +11,16 @@ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 License for the specific language governing permissions and limitations under
 the License.
 */
-import '../../@polymer/polymer/polymer-legacy.js';
-
-import '../../@polymer/polymer/lib/elements/dom-if.js';
-import '../../arc-icons/arc-icons.js';
-import '../../@polymer/paper-styles/shadow.js';
-import '../../@polymer/paper-button/paper-button.js';
-import '../../@polymer/paper-icon-button/paper-icon-button.js';
-import { IronValidatableBehavior } from '../../@polymer/iron-validatable-behavior/iron-validatable-behavior.js';
-import '../../@polymer/iron-icon/iron-icon.js';
-import { html } from '../../@polymer/polymer/lib/utils/html-tag.js';
-import { mixinBehaviors } from '../../@polymer/polymer/lib/legacy/class.js';
-import { PolymerElement } from '../../@polymer/polymer/polymer-element.js';
+import {IronValidatableBehavior} from '@polymer/iron-validatable-behavior/iron-validatable-behavior.js';
+import {html} from '@polymer/polymer/lib/utils/html-tag.js';
+import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
+import {PolymerElement} from '@polymer/polymer/polymer-element.js';
+import '@polymer/polymer/lib/elements/dom-if.js';
+import '@advanced-rest-client/arc-icons/arc-icons.js';
+import '@polymer/paper-styles/shadow.js';
+import '@polymer/paper-button/paper-button.js';
+import '@polymer/paper-icon-button/paper-icon-button.js';
+import '@polymer/iron-icon/iron-icon.js';
 let latestFile;
 /**
  * `<files-payload-editor>` A request body editor to add files as a payload.
@@ -134,7 +132,9 @@ class FilesPayloadEditor extends mixinBehaviors([IronValidatableBehavior], Polym
         <div class="card">
           <iron-icon class="file-icon" icon="arc:insert-drive-file"></iron-icon>
           <span class="file-name">[[fileName]]</span>
-          <paper-icon-button class="action-icon delete-icon" icon="arc:remove-circle-outline" hidden\$="[[!hasFile]]" title="Clear file" on-tap="removeFile"></paper-icon-button>
+          <paper-icon-button class="action-icon delete-icon"
+            icon="arc:remove-circle-outline" hidden\$="[[!hasFile]]"
+            title="Clear file" on-click="removeFile"></paper-icon-button>
         </div>
       </div>
     </template>

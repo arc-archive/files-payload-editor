@@ -5,21 +5,12 @@
  *   https://github.com/Polymer/tools/tree/master/packages/gen-typescript-declarations
  *
  * To modify these typings, edit the source file(s):
- *   files-payload-editor.html
+ *   files-payload-editor.js
  */
 
 
 // tslint:disable:variable-name Describing an API that's defined elsewhere.
 // tslint:disable:no-any describes the API as best we are able today
-
-/// <reference path="../polymer/types/polymer.d.ts" />
-/// <reference path="../polymer/types/lib/elements/dom-if.d.ts" />
-/// <reference path="../arc-icons/arc-icons.d.ts" />
-/// <reference path="../paper-styles/shadow.d.ts" />
-/// <reference path="../paper-button/paper-button.d.ts" />
-/// <reference path="../paper-icon-button/paper-icon-button.d.ts" />
-/// <reference path="../iron-validatable-behavior/iron-validatable-behavior.d.ts" />
-/// <reference path="../iron-icon/iron-icon.d.ts" />
 
 declare namespace ApiComponents {
 
@@ -145,6 +136,11 @@ declare namespace ApiComponents {
   }
 }
 
-interface HTMLElementTagNameMap {
-  "files-payload-editor": ApiComponents.FilesPayloadEditor;
+declare global {
+
+  interface HTMLElementTagNameMap {
+    "files-payload-editor": ApiComponents.FilesPayloadEditor;
+  }
 }
+
+export {};

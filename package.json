@@ -22,7 +22,6 @@
     "@polymer/iron-demo-helpers": "^3.0.0",
     "@webcomponents/webcomponentsjs": "^2.0.0",
     "@polymer/iron-component-page": "^4.0.0",
-    "@polymer/iron-test-helpers": "^3.0.0",
     "@polymer/test-fixture": "^4.0.2",
     "chai": "^4.2.0",
     "mocha": "^5.2.0",
@@ -31,9 +30,9 @@
   },
   "main": "files-payload-editor.js",
   "scripts": {
-    "lint": "node_modules/.bin/polymer lint files-payload-editor.html",
-    "test-sauce": "node_modules/.bin/polymer test --plugin sauce --job-name \"files-payload-editor:local-test\"",
-    "test": "node_modules/.bin/polymer test --plugin local",
+    "lint": "polymer lint files-payload-editor.html",
+    "test-sauce": "polymer test --plugin sauce --job-name \"files-payload-editor:local-test\"",
+    "test": "polymer test --plugin local",
     "update-types": "gen-typescript-declarations --deleteExisting --outDir ."
   },
   "bugs": {
@@ -45,12 +44,13 @@
     "The Advanced REST client authors <arc@mulesoft.com>"
   ],
   "dependencies": {
-    "@polymer/polymer": "^3.0.0",
+    "@advanced-rest-client/arc-icons": "^3.0.0-preview.1",
     "@polymer/iron-flex-layout": "^3.0.0",
+    "@polymer/iron-icon": "^3.0.0",
     "@polymer/iron-validatable-behavior": "^3.0.0",
     "@polymer/paper-button": "^3.0.0",
     "@polymer/paper-icon-button": "^3.0.0",
     "@polymer/paper-styles": "^3.0.0",
-    "@polymer/iron-icon": "^3.0.0"
+    "@polymer/polymer": "^3.0.0"
   }
 }
