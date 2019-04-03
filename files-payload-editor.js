@@ -41,13 +41,10 @@ let latestFile;
  *
  * Custom property | Description | Default
  * ----------------|-------------|----------
- * `--files-payload-editor` | Mixin applied to the element | `{}`
- * `--files-payload-editor-file-item` | Mixin applied to a selected file item | `{}`
  * `--files-payload-editor-file-trigger-color` | Color of the file input | `--accent-color` or `#FF5722`
  * `--files-payload-editor-file-summary-color` | Color of the selected file summary | `rgba(0,0,0,0.74)`
  * `--files-payload-editor-selected-file-name-color` | Selected file name label color | `rgba(0,0,0,0.74)`
  * `--files-payload-editor-selected-file-icon-color` | Color of the icon in the selected file section | `--accent-color` or `#2196F3`
- * `--arc-font-body1` | Theme mixin, applied to text elements | `{}`
  * `--inline-fom-action-icon-color` | Theme variable, color of the delete icon | `rgba(0, 0, 0, 0.74)`
  * `--inline-fom-action-icon-color-hover` | Theme variable, color of the delete icon when hovering | `--accent-color` or `rgba(0, 0, 0, 0.74)`
  *
@@ -64,12 +61,12 @@ class FilesPayloadEditor extends mixinBehaviors([IronValidatableBehavior], Polym
     :host {
       display: block;
       padding: 12px 0;
-      @apply --files-payload-editor;
     }
 
     .selector {
-      @apply --layout-horizontal;
-      @apply --layout-center;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
     }
 
     .list {
@@ -80,9 +77,9 @@ class FilesPayloadEditor extends mixinBehaviors([IronValidatableBehavior], Polym
 
     paper-material {
       padding: 0.4em 0.57em;
-      @apply --layout-horizontal;
-      @apply --layout-center;
-      @apply --files-payload-editor-file-item;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
     }
 
     .file-trigger {
@@ -91,7 +88,8 @@ class FilesPayloadEditor extends mixinBehaviors([IronValidatableBehavior], Polym
     }
 
     .files-counter-message {
-      @apply --layout-flex;
+      flex: 1;
+      flex-basis: 0.000000001px;
       @apply --arc-font-body1;
       color: var(--files-payload-editor-file-summary-color, rgba(0,0,0,0.74));
     }
