@@ -16,7 +16,6 @@ import {html} from '../../@polymer/polymer/lib/utils/html-tag.js';
 import {mixinBehaviors} from '../../@polymer/polymer/lib/legacy/class.js';
 import {PolymerElement} from '../../@polymer/polymer/polymer-element.js';
 import '../../@advanced-rest-client/arc-icons/arc-icons.js';
-import '../../@polymer/paper-styles/shadow.js';
 import '../../@polymer/paper-button/paper-button.js';
 import '../../@polymer/paper-icon-button/paper-icon-button.js';
 import '../../@polymer/iron-icon/iron-icon.js';
@@ -117,7 +116,9 @@ class FilesPayloadEditor extends mixinBehaviors([IronValidatableBehavior], Polym
     }
 
     .card {
-      @apply --shadow-elevation-2dp;
+      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+                  0 1px 5px 0 rgba(0, 0, 0, 0.12),
+                  0 3px 1px -2px rgba(0, 0, 0, 0.2);
     }
     </style>
     <div class="selector">
