@@ -380,7 +380,7 @@ describe('<files-payload-editor>', function() {
     });
 
     it('Getter returns previously registered handler', () => {
-      assert.isUndefined(element.onchange);
+      assert.equal(element.onchange, null);
       const f = () => {};
       element.onchange = f;
       assert.isTrue(element.onchange === f);
