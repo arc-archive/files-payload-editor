@@ -5,30 +5,23 @@
  *   https://github.com/Polymer/tools/tree/master/packages/gen-typescript-declarations
  *
  * To modify these typings, edit the source file(s):
- *   files-payload-editor.html
+ *   files-payload-editor.js
  */
 
 
 // tslint:disable:variable-name Describing an API that's defined elsewhere.
 // tslint:disable:no-any describes the API as best we are able today
 
-/// <reference path="../polymer/types/polymer.d.ts" />
-/// <reference path="../polymer/types/lib/elements/dom-if.d.ts" />
-/// <reference path="../arc-icons/arc-icons.d.ts" />
-/// <reference path="../paper-styles/shadow.d.ts" />
-/// <reference path="../paper-button/paper-button.d.ts" />
-/// <reference path="../paper-icon-button/paper-icon-button.d.ts" />
-/// <reference path="../iron-validatable-behavior/iron-validatable-behavior.d.ts" />
-/// <reference path="../iron-icon/iron-icon.d.ts" />
+import {LitElement, html, css} from 'lit-element';
 
-declare namespace ApiComponents {
+import {ValidatableMixin} from '@anypoint-web-components/validatable-mixin/validatable-mixin.js';
+
+declare namespace UiElements {
 
   /**
    * `<files-payload-editor>` A request body editor to add files as a payload.
    *
    * With this element the user can select single file that will be used in the request body.
-   *
-   * As other payload editors it fires `payload-value-changed` custom event when value change.
    *
    * The element can be used in forms when `iron-form` is used. It contains validation methods to
    * validate user input.
@@ -38,30 +31,22 @@ declare namespace ApiComponents {
    * ```html
    * <files-payload-editor></files-payload-editor>
    * ```
-   *
-   * ### Styling
-   * `<files-payload-editor>` provides the following custom properties and mixins for styling:
-   *
-   * Custom property | Description | Default
-   * ----------------|-------------|----------
-   * `--files-payload-editor` | Mixin applied to the element | `{}`
-   * `--files-payload-editor-file-item` | Mixin applied to a selected file item | `{}`
-   * `--files-payload-editor-file-trigger-color` | Color of the file input | `--accent-color` or `#FF5722`
-   * `--files-payload-editor-file-summary-color` | Color of the selected file summary | `rgba(0,0,0,0.74)`
-   * `--files-payload-editor-selected-file-name-color` | Selected file name label color | `rgba(0,0,0,0.74)`
-   * `--files-payload-editor-selected-file-icon-color` | Color of the icon in the selected file section | `--accent-color` or `#2196F3`
-   * `--arc-font-body1` | Theme mixin, applied to text elements | `{}`
-   * `--inline-fom-action-icon-color` | Theme variable, color of the delete icon | `rgba(0, 0, 0, 0.74)`
-   * `--inline-fom-action-icon-color-hover` | Theme variable, color of the delete icon when hovering | `--accent-color` or `rgba(0, 0, 0, 0.74)`
    */
   class FilesPayloadEditor extends
-    Polymer.IronValidatableBehavior(
+    ValidatableMixin(
     Object) {
+    readonly hasFile: Boolean|null;
+
+    /**
+     * Value produced by this control.
+     */
+    value: Blob|null;
+    onchange: Function|null;
 
     /**
      * Computed value, true if the control has files.
      */
-    readonly hasFile: boolean|null|undefined;
+    _hasFile: boolean|null|undefined;
 
     /**
      * If set the value will be base64 encoded.
@@ -79,9 +64,13 @@ declare namespace ApiComponents {
     fileSize: number|null|undefined;
 
     /**
-     * Value produced by this control.
+     * Icon prefix from the svg icon set. This can be used to replace the set
+     * without changing the icon.
+     *
+     * Defaults to `arc`.
      */
-    value: Blob|null;
+    iconPrefix: string|null|undefined;
+    render(): any;
 
     /**
      * Returns a reference to the input element.
@@ -127,7 +116,7 @@ declare namespace ApiComponents {
     _setFileValue(file: Blob|null): void;
 
     /**
-     * Overides Polymer.IronValidatableBehavior
+     * Overides ValidatableMixin
      */
     _getValidity(): any;
     _computeHasFile(file: any): any;
@@ -142,9 +131,13 @@ declare namespace ApiComponents {
      * This removes reference to the object so it can be GSd.
      */
     clearCache(): void;
+    _computeIcon(name: any): any;
   }
 }
 
-interface HTMLElementTagNameMap {
-  "files-payload-editor": ApiComponents.FilesPayloadEditor;
+declare global {
+
+  interface HTMLElementTagNameMap {
+    "files-payload-editor": UiElements.FilesPayloadEditor;
+  }
 }
