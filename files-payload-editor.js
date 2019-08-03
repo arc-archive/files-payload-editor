@@ -11,21 +11,17 @@ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 License for the specific language governing permissions and limitations under
 the License.
 */
-import {IronValidatableBehavior} from '../../@polymer/iron-validatable-behavior/iron-validatable-behavior.js';
-import {html} from '../../@polymer/polymer/lib/utils/html-tag.js';
-import {mixinBehaviors} from '../../@polymer/polymer/lib/legacy/class.js';
-import {PolymerElement} from '../../@polymer/polymer/polymer-element.js';
-import '../../@advanced-rest-client/arc-icons/arc-icons.js';
-import '../../@polymer/paper-button/paper-button.js';
-import '../../@polymer/paper-icon-button/paper-icon-button.js';
-import '../../@polymer/iron-icon/iron-icon.js';
+import { LitElement, html, css } from 'lit-element';
+import { ValidatableMixin } from '@anypoint-web-components/validatable-mixin/validatable-mixin.js';
+import '@advanced-rest-client/arc-icons/arc-icons.js';
+import '@polymer/paper-button/paper-button.js';
+import '@polymer/paper-icon-button/paper-icon-button.js';
+import '@polymer/iron-icon/iron-icon.js';
 let latestFile;
 /**
  * `<files-payload-editor>` A request body editor to add files as a payload.
  *
  * With this element the user can select single file that will be used in the request body.
- *
- * As other payload editors it fires `payload-value-changed` custom event when value change.
  *
  * The element can be used in forms when `iron-form` is used. It contains validation methods to
  * validate user input.
@@ -36,29 +32,14 @@ let latestFile;
  * <files-payload-editor></files-payload-editor>
  * ```
  *
- * ### Styling
- * `<files-payload-editor>` provides the following custom properties and mixins for styling:
- *
- * Custom property | Description | Default
- * ----------------|-------------|----------
- * `--files-payload-editor-file-trigger-color` | Color of the file input | `--accent-color` or `#FF5722`
- * `--files-payload-editor-file-summary-color` | Color of the selected file summary | `rgba(0,0,0,0.74)`
- * `--files-payload-editor-selected-file-name-color` | Selected file name label color | `rgba(0,0,0,0.74)`
- * `--files-payload-editor-selected-file-icon-color` | Color of the icon in the selected file section | `--accent-color` or `#2196F3`
- * `--inline-fom-action-icon-color` | Theme variable, color of the delete icon | `rgba(0, 0, 0, 0.74)`
- * `--inline-fom-action-icon-color-hover` | Theme variable, color of the delete icon when hovering | `--accent-color` or `rgba(0, 0, 0, 0.74)`
- *
  * @customElement
- * @polymer
  * @demo demo/index.html
- * @appliesMixin Polymer.IronValidatableBehavior
- * @memberof ApiComponents
+ * @appliesMixin ValidatableMixin
+ * @memberof UiElements
  */
-class FilesPayloadEditor extends mixinBehaviors([IronValidatableBehavior], PolymerElement) {
-  static get template() {
-    return html`
-    <style>
-    :host {
+class FilesPayloadEditor extends ValidatableMixin(LitElement) {
+  static get styles() {
+    return css`:host {
       display: block;
       padding: 12px 0;
     }
@@ -117,58 +98,110 @@ class FilesPayloadEditor extends mixinBehaviors([IronValidatableBehavior], Polym
       box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
                   0 1px 5px 0 rgba(0, 0, 0, 0.12),
                   0 3px 1px -2px rgba(0, 0, 0, 0.2);
-    }
-    </style>
-    <div class="selector">
-      <paper-button raised="" on-tap="_selectFile" class="file-trigger">Choose a file</paper-button>
-      <template is="dom-if" if="[[hasFile]]">
-        <span class="files-counter-message" hidden\$="[[!hasFile]]">1 file selected, [[fileSize]] bytes</span>
-      </template>
-    </div>
-    <template is="dom-if" if="[[hasFile]]">
-      <div class="list">
-        <div class="card">
-          <iron-icon class="file-icon" icon="arc:insert-drive-file"></iron-icon>
-          <span class="file-name">[[fileName]]</span>
-          <paper-icon-button class="action-icon delete-icon"
-            icon="arc:remove-circle-outline" hidden\$="[[!hasFile]]"
-            title="Clear file" on-click="removeFile"></paper-icon-button>
-        </div>
-      </div>
-    </template>
-    <input type="file" hidden="" on-change="_fileObjectChanged">
-`;
+    }`;
   }
 
-  static get is() {
-    return 'files-payload-editor';
+  render() {
+    const { hasFile, fileSize, fileName } = this;
+    return html`<div class="selector">
+      <paper-button raised @click="${this._selectFile}" class="file-trigger">Choose a file</paper-button>
+      ${hasFile ? html`
+        <span class="files-counter-message">1 file selected, ${fileSize} bytes</span>` : undefined}
+    </div>
+
+    ${hasFile ? html`<div class="list">
+      <div class="card">
+        <iron-icon class="file-icon" icon="${this._computeIcon('insert-drive-file')}"></iron-icon>
+        <span class="file-name">${fileName}</span>
+        <paper-icon-button
+          class="action-icon delete-icon"
+          icon="${this._computeIcon('remove-circle-outline')}"
+          title="Clear file"
+          @click="${this.removeFile}"></paper-icon-button>
+      </div>
+    </div>` : undefined}
+    <input type="file" hidden @change="${this._fileObjectChanged}">`;
   }
+
   static get properties() {
     return {
       // Computed value, true if the control has files.
-      hasFile: {
-        type: Boolean,
-        readOnly: true
+      _hasFile: {
+        type: Boolean
       },
       /**
        * If set the value will be base64 encoded.
        */
-      base64Encode: Boolean,
+      base64Encode: { type: Boolean },
       // Selected file name
-      fileName: String,
+      fileName: { type: String },
       // Selected file size,
-      fileSize: Number,
+      fileSize: { type: Number },
       /**
        * Value produced by this control.
        *
        * @type {Blob}
        */
-      value: {
-        type: Object,
-        notify: true,
-        observer: '_valueChnaged'
-      }
+      value: { },
+      /**
+       * Icon prefix from the svg icon set. This can be used to replace the set
+       * without changing the icon.
+       *
+       * Defaults to `arc`.
+       */
+      iconPrefix: { type: String }
     };
+  }
+  /**
+   * @return {Boolean} true if the control has files.
+   */
+  get hasFile() {
+    return this._hasFile || false;
+  }
+
+  get value() {
+    return this._value;
+  }
+
+  set value(value) {
+    const old = this._value;
+    if (old === value) {
+      return;
+    }
+    this._value = value;
+    this._valueChnaged(value);
+    this.dispatchEvent(new CustomEvent('value-changed', {
+      detail: {
+        value
+      }
+    }));
+  }
+  /**
+   * @return {Function|null} Prefiously registered function, if any.
+   */
+  get onchange() {
+    return this._onchange || null;
+  }
+  /**
+   * Registers a callback function for `value-changed` event.
+   * @param {?Function} value A function to register. Pass null to clear.
+   */
+  set onchange(value) {
+    const key = '_onchange';
+    if (this[key]) {
+      this.removeEventListener('value-changed', this[key]);
+    }
+    if (typeof value !== 'function') {
+      this[key] = null;
+      return;
+    }
+    this[key] = value;
+    this.addEventListener('value-changed', value);
+  }
+
+  constructor() {
+    super();
+    this.iconPrefix = 'arc';
   }
   /**
    * Returns a reference to the input element.
@@ -184,12 +217,12 @@ class FilesPayloadEditor extends mixinBehaviors([IronValidatableBehavior], Polym
       return;
     }
     if (value instanceof Blob) {
-      this.set('fileName', value.name || 'blob');
-      this.set('fileSize', value.size);
-      this._setHasFile(true);
+      this.fileName = value.name || 'blob';
+      this.fileSize = value.size;
+      this._hasFile = true;
       latestFile = value;
     } else {
-      this._setHasFile(false);
+      this._hasFile = false;
     }
     if (!this.fileName || (!this.fileSize && this.fileSize !== 0)) {
       this._updateFileMeta(value);
@@ -201,9 +234,7 @@ class FilesPayloadEditor extends mixinBehaviors([IronValidatableBehavior], Polym
     } else {
       type = 'application/octet-stream';
     }
-    setTimeout(() => {
-      this._informContentType(type);
-    });
+    setTimeout(() => this._informContentType(type));
   }
   /**
    * Updated `fileName` and `fileSize` from a base64 encoded string value
@@ -216,7 +247,7 @@ class FilesPayloadEditor extends mixinBehaviors([IronValidatableBehavior], Polym
         this.value = latestFile;
         return;
       }
-      this._setHasFile(false);
+      this._hasFile = false;
       return;
     }
     let type;
@@ -229,18 +260,18 @@ class FilesPayloadEditor extends mixinBehaviors([IronValidatableBehavior], Polym
     let byteChars;
     try {
       byteChars = atob(value);
-      this._setHasFile(true);
+      this._hasFile = true;
     } catch (e) {
       if (latestFile) {
         this.value = latestFile;
         return;
       }
-      this._setHasFile(false);
+      this._hasFile = false;
     }
     type = type || 'application/octet-stream';
     this._informContentType(type);
-    this.set('fileName', 'blob');
-    this.set('fileSize', byteChars ? byteChars.length : -1);
+    this.fileName = 'blob';
+    this.fileSize = byteChars ? byteChars.length : -1;
   }
   /**
    * Dispatches `content-type-changed` custom event change when a
@@ -286,11 +317,11 @@ class FilesPayloadEditor extends mixinBehaviors([IronValidatableBehavior], Polym
    */
   _setFileValue(file) {
     if (!file) {
-      this.set('value', undefined);
+      this.value = undefined;
       return;
     }
     if (!this.base64Encode) {
-      this.set('value', file);
+      this.value = file;
       return;
     }
     const reader = new FileReader();
@@ -298,12 +329,11 @@ class FilesPayloadEditor extends mixinBehaviors([IronValidatableBehavior], Polym
     reader.addEventListener('load', function() {
       const typed = new Uint8Array(reader.result);
       const result = btoa(String.fromCharCode.apply(null, typed));
-      context.set('value', result);
+      context.value = result;
       context.__informBase64Conversion();
     });
     reader.addEventListener('error', function() {
-      console.warn('File value processing error');
-      context.set('value', 'Invalid file');
+      context.value = 'Invalid file';
       context.__informBase64Conversion();
     });
     reader.readAsArrayBuffer(file);
@@ -316,7 +346,7 @@ class FilesPayloadEditor extends mixinBehaviors([IronValidatableBehavior], Polym
     });
     this.dispatchEvent(e);
   }
-  // Overides Polymer.IronValidatableBehavior
+  // Overides ValidatableMixin
   _getValidity() {
     return this._computeHasFile(this.value);
   }
@@ -338,7 +368,7 @@ class FilesPayloadEditor extends mixinBehaviors([IronValidatableBehavior], Polym
     this.value = undefined;
     this.fileName = undefined;
     this.fileSize = undefined;
-    this._setHasFile(false);
+    this._hasFile = (false);
     const file = this._getInput();
     file.value = '';
   }
@@ -349,5 +379,13 @@ class FilesPayloadEditor extends mixinBehaviors([IronValidatableBehavior], Polym
   clearCache() {
     latestFile = undefined;
   }
+
+  _computeIcon(name) {
+    let icon = '';
+    if (this.iconPrefix) {
+      icon = this.iconPrefix + ':';
+    }
+    return icon + name;
+  }
 }
-window.customElements.define(FilesPayloadEditor.is, FilesPayloadEditor);
+window.customElements.define('files-payload-editor', FilesPayloadEditor);

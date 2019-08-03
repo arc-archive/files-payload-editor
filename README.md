@@ -1,6 +1,6 @@
 [![Published on NPM](https://img.shields.io/npm/v/@advanced-rest-client/files-payload-editor.svg)](https://www.npmjs.com/package/@advanced-rest-client/files-payload-editor)
 
-[![Build Status](https://travis-ci.org/advanced-rest-client/files-payload-editor.svg?branch=stage)](https://travis-ci.org/advanced-rest-client/files-payload-editor)  
+[![Build Status](https://travis-ci.org/advanced-rest-client/files-payload-editor.svg?branch=stage)](https://travis-ci.org/advanced-rest-client/files-payload-editor)
 
 [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/advanced-rest-client/files-payload-editor)
 
@@ -9,24 +9,8 @@
 `<files-payload-editor>` A request body editor to add files as a payload.
 With this element the user can select single file that will be used in the request body.
 
-As other payload editors it fires `payload-value-changed` custom event when value change.
-
 The element can be used in forms when `iron-form` is used. It contains validation methods to
 validate user input.
-
-<!---
-```
-<custom-element-demo>
-  <template>
-    <link rel="import" href="files-payload-editor.html">
-    <next-code-block></next-code-block>
-  </template>
-</custom-element-demo>
-```
--->
-```html
-<files-payload-editor></files-payload-editor>
-```
 
 ### API components
 
@@ -50,43 +34,53 @@ npm install --save @advanced-rest-client/files-payload-editor
   </head>
   <body>
     <files-payload-editor></files-payload-editor>
+    <script>
+    {
+      document.querySelector('files-payload-editor').onchange = (e) => {
+        console.log(e.target.value); // or e.detail.value
+      };
+    }
+    </script>
   </body>
 </html>
 ```
 
-### In a Polymer 3 element
+### In a LitElement template
 
-```js
-import {PolymerElement, html} from '@polymer/polymer';
+```javascript
+import { LitElement, html } from 'lit-element';
 import '@advanced-rest-client/files-payload-editor/files-payload-editor.js';
 
-class SampleElement extends PolymerElement {
-  static get template() {
+class SampleElement extends LitElement {
+  render() {
     return html`
-    <files-payload-editor></files-payload-editor>
+    <files-payload-editor @value-changed="${this._fileChanged}"></files-payload-editor>
     `;
+  }
+
+  _fileChanged(e) {
+    this.body = e.detail.value;
   }
 }
 customElements.define('sample-element', SampleElement);
 ```
 
-### Installation
+### Development
 
 ```sh
 git clone https://github.com/advanced-rest-client/files-payload-editor
-cd api-url-editor
+cd files-payload-editor
 npm install
-npm install -g polymer-cli
 ```
 
 ### Running the demo locally
 
 ```sh
-polymer serve --npm
-open http://127.0.0.1:<port>/demo/
+npm start
 ```
 
 ### Running the tests
+
 ```sh
-polymer test --npm
+npm test
 ```
