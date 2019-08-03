@@ -54,3 +54,13 @@
 
 
 
+# [3.0.0](https://github.com/advanced-rest-client/files-payload-editor/compare/0.1.3...3.0.0) (2019-08-03)
+
+
+### Bug Fixes
+
+* fixing dependency in karma SL config file ([c3d13bd](https://github.com/advanced-rest-client/files-payload-editor/commit/c3d13bd))
+* fixing test ([1f4d1d9](https://github.com/advanced-rest-client/files-payload-editor/commit/1f4d1d9))
+
+
+
