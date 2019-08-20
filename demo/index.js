@@ -1,5 +1,6 @@
 import { html } from 'lit-html';
 import { ArcDemoPage } from '@advanced-rest-client/arc-demo-helper/ArcDemoPage.js';
+import '@anypoint-web-components/anypoint-styles/colors.js';
 import '../files-payload-editor.js';
 
 class ComponentDemo extends ArcDemoPage {

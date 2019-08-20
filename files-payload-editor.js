@@ -14,8 +14,8 @@ the License.
 import { LitElement, html, css } from 'lit-element';
 import { ValidatableMixin } from '@anypoint-web-components/validatable-mixin/validatable-mixin.js';
 import '@advanced-rest-client/arc-icons/arc-icons.js';
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
+import '@anypoint-web-components/anypoint-button/anypoint-button.js';
+import '@anypoint-web-components/anypoint-button/anypoint-icon-button.js';
 import '@polymer/iron-icon/iron-icon.js';
 let latestFile;
 /**
@@ -56,55 +56,30 @@ class FilesPayloadEditor extends ValidatableMixin(LitElement) {
       margin-top: 12px;
     }
 
-    paper-material {
-      padding: 0.4em 0.57em;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-    }
-
     .file-trigger {
       margin-right: 12px;
-      color: var(--files-payload-editor-file-trigger-color, var(--accent-color, #FF5722));
     }
 
     .files-counter-message {
       flex: 1;
       flex-basis: 0.000000001px;
-      @apply --arc-font-body1;
-      color: var(--files-payload-editor-file-summary-color, rgba(0,0,0,0.74));
-    }
-
-    .file-icon {
-      color: var(--files-payload-editor-selected-file-icon-color, var(--accent-color, #2196F3));
-    }
-
-    .delete-icon {
-      color: var(--inline-fom-action-icon-color, rgba(0, 0, 0, 0.74));
-      transition: color 0.2s linear;
-    }
-
-    .delete-icon:hover {
-      color: var(--inline-fom-action-icon-color-hover, var(--accent-color, rgba(0, 0, 0, 0.74)));
     }
 
     .file-name {
-      @apply --arc-font-body1;
       margin-left: 8px;
-      color: var(--files-payload-editor-selected-file-name-color, rgba(0,0,0,0.74));
     }
 
     .card {
-      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
-                  0 1px 5px 0 rgba(0, 0, 0, 0.12),
-                  0 3px 1px -2px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: row;
+      align-items: center;
     }`;
   }
 
   render() {
     const { hasFile, fileSize, fileName } = this;
     return html`<div class="selector">
-      <paper-button raised @click="${this._selectFile}" class="file-trigger">Choose a file</paper-button>
+      <anypoint-button emphasis="high" @click="${this._selectFile}" class="file-trigger">Choose a file</anypoint-button>
       ${hasFile ? html`
         <span class="files-counter-message">1 file selected, ${fileSize} bytes</span>` : undefined}
     </div>
@@ -113,11 +88,12 @@ class FilesPayloadEditor extends ValidatableMixin(LitElement) {
       <div class="card">
         <iron-icon class="file-icon" icon="${this._computeIcon('insert-drive-file')}"></iron-icon>
         <span class="file-name">${fileName}</span>
-        <paper-icon-button
+        <anypoint-icon-button
           class="action-icon delete-icon"
-          icon="${this._computeIcon('remove-circle-outline')}"
           title="Clear file"
-          @click="${this.removeFile}"></paper-icon-button>
+          @click="${this.removeFile}">
+          <iron-icon icon="${this._computeIcon('remove-circle-outline')}"></iron-icon>
+        </anypoint-icon-button>
       </div>
     </div>` : undefined}
     <input type="file" hidden @change="${this._fileObjectChanged}">`;
