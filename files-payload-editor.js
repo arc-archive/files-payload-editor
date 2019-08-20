@@ -17,7 +17,6 @@ import '@advanced-rest-client/arc-icons/arc-icons.js';
 import '@anypoint-web-components/anypoint-button/anypoint-button.js';
 import '@anypoint-web-components/anypoint-button/anypoint-icon-button.js';
 import '@polymer/iron-icon/iron-icon.js';
-let latestFile;
 /**
  * `<files-payload-editor>` A request body editor to add files as a payload.
  *
@@ -196,7 +195,7 @@ class FilesPayloadEditor extends ValidatableMixin(LitElement) {
       this.fileName = value.name || 'blob';
       this.fileSize = value.size;
       this._hasFile = true;
-      latestFile = value;
+      this.latestFile = value;
     } else {
       this._hasFile = false;
     }
@@ -219,8 +218,8 @@ class FilesPayloadEditor extends ValidatableMixin(LitElement) {
    */
   _updateFileMeta(value) {
     if (!value || typeof value !== 'string') {
-      if (latestFile) {
-        this.value = latestFile;
+      if (this.latestFile) {
+        this.value = this.latestFile;
         return;
       }
       this._hasFile = false;
@@ -238,8 +237,8 @@ class FilesPayloadEditor extends ValidatableMixin(LitElement) {
       byteChars = atob(value);
       this._hasFile = true;
     } catch (e) {
-      if (latestFile) {
-        this.value = latestFile;
+      if (this.latestFile) {
+        this.value = this.latestFile;
         return;
       }
       this._hasFile = false;
@@ -353,7 +352,7 @@ class FilesPayloadEditor extends ValidatableMixin(LitElement) {
    * This removes reference to the object so it can be GSd.
    */
   clearCache() {
-    latestFile = undefined;
+    this.latestFile = undefined;
   }
 
   _computeIcon(name) {
