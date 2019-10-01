@@ -351,28 +351,6 @@ describe('<files-payload-editor>', function() {
     });
   });
 
-  describe('_computeIcon()', () => {
-    let element;
-    beforeEach(async () => {
-      element = await basicFixture();
-    });
-
-    it('sets default profix', () => {
-      assert.equal(element.iconPrefix, 'arc');
-    });
-
-    it('computes icon value', () => {
-      const result = element._computeIcon('test');
-      assert.equal(result, 'arc:test');
-    });
-
-    it('handles no icon prefix', () => {
-      element.iconPrefix = undefined;
-      const result = element._computeIcon('test');
-      assert.equal(result, 'test');
-    });
-  });
-
   describe('onchange', () => {
     let element;
     beforeEach(async () => {
