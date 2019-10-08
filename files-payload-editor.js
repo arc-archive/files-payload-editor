@@ -82,9 +82,14 @@ class FilesPayloadEditor extends ValidatableMixin(LitElement) {
   }
 
   render() {
-    const { hasFile, fileSize, fileName } = this;
+    const { hasFile, fileSize, fileName, compatibility } = this;
     return html`<div class="selector">
-      <anypoint-button emphasis="high" @click="${this._selectFile}" class="file-trigger">Choose a file</anypoint-button>
+      <anypoint-button
+        emphasis="high"
+        @click="${this._selectFile}"
+        class="file-trigger"
+        ?compatibility="${compatibility}"
+      >Choose a file</anypoint-button>
       ${hasFile ? html`
         <span class="files-counter-message">1 file selected, ${fileSize} bytes</span>` : undefined}
     </div>
@@ -97,6 +102,7 @@ class FilesPayloadEditor extends ValidatableMixin(LitElement) {
           class="action-icon delete-icon"
           title="Clear file"
           @click="${this.removeFile}"
+          ?compatibility="${compatibility}"
         >
           <span class="icon">${removeCircleOutline}</span>
         </anypoint-icon-button>
@@ -124,7 +130,11 @@ class FilesPayloadEditor extends ValidatableMixin(LitElement) {
        *
        * @type {Blob}
        */
-      value: { }
+      value: { },
+      /**
+       * Enables compatibility with Anypoint styling
+       */
+      compatibility: { type: Boolean },
     };
   }
   /**
