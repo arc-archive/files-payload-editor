@@ -94,3 +94,18 @@
 
 
 
+## [3.0.3](https://github.com/advanced-rest-client/files-payload-editor/compare/0.1.3...3.0.3) (2019-10-08)
+
+
+### Bug Fixes
+
+* fixing dependency in karma SL config file ([c3d13bd](https://github.com/advanced-rest-client/files-payload-editor/commit/c3d13bd))
+* fixing test ([1f4d1d9](https://github.com/advanced-rest-client/files-payload-editor/commit/1f4d1d9))
+
+
+### Features
+
+* adding `compatybility` flag ([7344fb2](https://github.com/advanced-rest-client/files-payload-editor/commit/7344fb2))
+
+
+
