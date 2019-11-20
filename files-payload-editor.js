@@ -36,7 +36,7 @@ import '@anypoint-web-components/anypoint-button/anypoint-icon-button.js';
  * @memberof UiElements
  */
 class FilesPayloadEditor extends ValidatableMixin(LitElement) {
-  static get styles() {
+  get styles() {
     return css`:host {
       display: block;
       padding: 12px 0;
@@ -83,7 +83,8 @@ class FilesPayloadEditor extends ValidatableMixin(LitElement) {
 
   render() {
     const { hasFile, fileSize, fileName, compatibility } = this;
-    return html`<div class="selector">
+    return html`<style>${this.styles}</style>
+    <div class="selector">
       <anypoint-button
         emphasis="high"
         @click="${this._selectFile}"
