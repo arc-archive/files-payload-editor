@@ -1,51 +1,53 @@
 import { fixture, assert, aTimeout } from '@open-wc/testing';
-import sinon from 'sinon/pkg/sinon-esm.js';
+import sinon from 'sinon';
 import '../files-payload-editor.js';
 
-describe('<files-payload-editor>', function() {
+describe('<files-payload-editor>', () => {
   async function basicFixture() {
-    return await fixture(`<files-payload-editor></files-payload-editor>`);
+    return fixture(`<files-payload-editor></files-payload-editor>`);
   }
 
   async function base64Fixture() {
-    return await fixture(`<files-payload-editor base64encode></files-payload-editor>`);
+    return fixture(
+      `<files-payload-editor base64encode></files-payload-editor>`
+    );
   }
 
-  describe('basic', function() {
+  describe('basic', () => {
     let element;
     const contentType = 'text/plain';
     const testBlob = new Blob(['test'], { type: contentType });
-    beforeEach(async function() {
+    beforeEach(async () => {
       element = await basicFixture();
       element.clearCache();
-      await aTimeout();
+      await aTimeout(0);
     });
 
-    it('Is not validated without a value', function() {
+    it('Is not validated without a value', () => {
       assert.isFalse(element.validate());
     });
 
-    it('Is validated with a value', function() {
+    it('Is validated with a value', () => {
       element.value = testBlob;
       assert.isTrue(element.validate());
     });
 
-    it('Computes hasFile', function() {
+    it('Computes hasFile', () => {
       element.value = testBlob;
       assert.isTrue(element.hasFile);
     });
 
-    it('Computes fileName', function() {
+    it('Computes fileName', () => {
       element.value = testBlob;
       assert.equal(element.fileName, 'blob');
     });
 
-    it('Computes fileSize', function() {
+    it('Computes fileSize', () => {
       element.value = testBlob;
       assert.equal(element.fileSize, 4);
     });
 
-    it('Fires content-type-changed custom event with known type', function(done) {
+    it('Fires content-type-changed custom event with known type', (done) => {
       element.addEventListener('content-type-changed', function clb(e) {
         element.removeEventListener('content-type-changed', clb);
         assert.equal(e.detail.value, contentType);
@@ -55,8 +57,8 @@ describe('<files-payload-editor>', function() {
       element.value = blob;
     });
 
-    it('Fires content-type-changed custom event with unknown type', function(done) {
-      element.addEventListener('content-type-changed', function(e) {
+    it('Fires content-type-changed custom event with unknown type', (done) => {
+      element.addEventListener('content-type-changed', (e) => {
         assert.equal(e.detail.value, 'application/octet-stream');
         done();
       });
@@ -67,7 +69,7 @@ describe('<files-payload-editor>', function() {
 
   describe('_getInput()', () => {
     let element;
-    beforeEach(async function() {
+    beforeEach(async () => {
       element = await basicFixture();
     });
 
@@ -82,12 +84,13 @@ describe('<files-payload-editor>', function() {
     const contentType = 'text/plain';
     let element;
     let blob;
-    beforeEach(async function() {
+    beforeEach(async () => {
       element = await basicFixture();
       element.clearCache();
       blob = new Blob(['test'], { type: contentType });
+      // @ts-ignore
       blob.name = 'test-name';
-      await aTimeout();
+      await aTimeout(0);
     });
 
     it('Does nothing when no value', () => {
@@ -139,10 +142,10 @@ describe('<files-payload-editor>', function() {
 
   describe('_updateFileMeta()', () => {
     let element;
-    beforeEach(async function() {
+    beforeEach(async () => {
       element = await basicFixture();
       element.clearCache();
-      await aTimeout();
+      await aTimeout(0);
     });
 
     it('Sets hasFile to false when no value', () => {
@@ -184,10 +187,10 @@ describe('<files-payload-editor>', function() {
 
   describe('_fileObjectChanged()', () => {
     let element;
-    beforeEach(async function() {
+    beforeEach(async () => {
       element = await basicFixture();
       element.clearCache();
-      await aTimeout();
+      await aTimeout(0);
     });
 
     it('Calls _setFileValue( with file value)', () => {
@@ -195,8 +198,8 @@ describe('<files-payload-editor>', function() {
       const blob = new Blob(['test']);
       element._fileObjectChanged({
         target: {
-          files: [blob]
-        }
+          files: [blob],
+        },
       });
       assert.isTrue(spy.called);
       assert.isTrue(spy.args[0][0] === blob);
@@ -207,12 +210,13 @@ describe('<files-payload-editor>', function() {
     const contentType = 'text/plain';
     let element;
     let blob;
-    beforeEach(async function() {
+    beforeEach(async () => {
       element = await basicFixture();
       element.clearCache();
       blob = new Blob(['test'], { type: contentType });
+      // @ts-ignore
       blob.name = 'test-name';
-      await aTimeout();
+      await aTimeout(0);
     });
 
     it('Sets value undefined when no argument', () => {
@@ -254,12 +258,13 @@ describe('<files-payload-editor>', function() {
     const contentType = 'text/plain';
     let element;
     let blob;
-    beforeEach(async function() {
+    beforeEach(async () => {
       element = await basicFixture();
       element.clearCache();
       blob = new Blob(['test'], { type: contentType });
+      // @ts-ignore
       blob.name = 'test-name';
-      await aTimeout();
+      await aTimeout(0);
     });
 
     it('Sets value undefined', () => {
@@ -283,19 +288,19 @@ describe('<files-payload-editor>', function() {
     });
   });
 
-  describe('base64', function() {
+  describe('base64', () => {
     let element;
     const contentType = 'text/plain';
     const testBase64String = 'dGVzdA==';
-    const testBlob = new Blob(['test'], {type: contentType});
-    const contentTypeBase64 = 'data:' + contentType + ';base64,' + testBase64String;
+    const testBlob = new Blob(['test'], { type: contentType });
+    const contentTypeBase64 = `data:${contentType};base64,${testBase64String}`;
 
     beforeEach(async () => {
       element = await base64Fixture();
       element.clearCache();
     });
 
-    it('Produces base64 string', function(done) {
+    it('Produces base64 string', (done) => {
       element._setFileValue(testBlob);
       element.addEventListener('base64-value-set', function clb() {
         element.removeEventListener('base64-value-set', clb);
@@ -304,7 +309,7 @@ describe('<files-payload-editor>', function() {
       });
     });
 
-    it('Computes fileName', function(done) {
+    it('Computes fileName', (done) => {
       element._setFileValue(testBlob);
       element.addEventListener('base64-value-set', function clb() {
         element.removeEventListener('base64-value-set', clb);
@@ -313,7 +318,7 @@ describe('<files-payload-editor>', function() {
       });
     });
 
-    it('Computes fileSize', function(done) {
+    it('Computes fileSize', (done) => {
       element._setFileValue(testBlob);
       element.addEventListener('base64-value-set', function clb() {
         element.removeEventListener('base64-value-set', clb);
@@ -322,25 +327,25 @@ describe('<files-payload-editor>', function() {
       });
     });
 
-    it('Fires base64 content type', function(done) {
-      element.addEventListener('content-type-changed', function(e) {
+    it('Fires base64 content type', (done) => {
+      element.addEventListener('content-type-changed', (e) => {
         assert.equal(e.detail.value, contentType);
         done();
       });
       element.value = contentTypeBase64;
     });
 
-    it('Computes hasFile from base64 with content type', function() {
+    it('Computes hasFile from base64 with content type', () => {
       element.value = contentTypeBase64;
       assert.isTrue(element.hasFile);
     });
 
-    it('Computes fileName from base64 with content type', function() {
+    it('Computes fileName from base64 with content type', () => {
       element.value = contentTypeBase64;
       assert.equal(element.fileName, 'blob');
     });
 
-    it('Computes fileSize from base64 with content type', function() {
+    it('Computes fileSize from base64 with content type', () => {
       element.value = contentTypeBase64;
       assert.equal(element.fileSize, 4);
     });
