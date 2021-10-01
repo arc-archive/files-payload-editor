@@ -1,10 +1,8 @@
-[![Published on NPM](https://img.shields.io/npm/v/@advanced-rest-client/files-payload-editor.svg)](https://www.npmjs.com/package/@advanced-rest-client/files-payload-editor)
+# DEPRECATED
 
-[![Build Status](https://travis-ci.com/advanced-rest-client/files-payload-editor.svg)](https://travis-ci.com/advanced-rest-client/files-payload-editor)
+This component is deprecated. The code base has been moved to [body-editor](https://github.com/advanced-rest-client/body-editor) module.
 
-[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/advanced-rest-client/files-payload-editor)
-
-# files-payload-editor
+-----
 
 `<files-payload-editor>` A request body editor to add files as a payload.
 With this element the user can select single file that will be used in the request body.
